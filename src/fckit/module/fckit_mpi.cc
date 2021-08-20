@@ -302,6 +302,48 @@ void fckit__mpi__allgatherv_logical( const Comm* comm, const int32* in, int32* o
         eckit::mpi::comm().allGatherv( in, in + sendcount, out, recvcounts, displs );
 }
 
+  // ygyu: start
+void fckit__mpi__gatherv_int32( const Comm* comm, const int32* in, int32* out, size_t sendcount, int32* recvcounts,
+                                   int32* displs, size_t root ) {
+    if ( comm )
+        comm->gatherv( in, in + sendcount, out, recvcounts, displs, root );
+    else
+        eckit::mpi::comm().gatherv( in, in + sendcount, out, recvcounts, displs, root );
+}
+
+void fckit__mpi__gatherv_int64( const Comm* comm, const int64* in, int64* out, size_t sendcount, int32* recvcounts,
+                                   int32* displs, size_t root ) {
+    if ( comm )
+        comm->gatherv( in, in + sendcount, out, recvcounts, displs, root );
+    else
+        eckit::mpi::comm().gatherv( in, in + sendcount, out, recvcounts, displs, root );
+}
+
+void fckit__mpi__gatherv_real32( const Comm* comm, const float* in, float* out, size_t sendcount, int32* recvcounts,
+                                    int32* displs, size_t root ) {
+    if ( comm )
+        comm->gatherv( in, in + sendcount, out, recvcounts, displs, root );
+    else
+        eckit::mpi::comm().gatherv( in, in + sendcount, out, recvcounts, displs, root );
+}
+
+void fckit__mpi__gatherv_real64( const Comm* comm, const double* in, double* out, size_t sendcount,
+                                    int32* recvcounts, int32* displs, size_t root ) {
+    if ( comm )
+        comm->gatherv( in, in + sendcount, out, recvcounts, displs, root );
+    else
+        eckit::mpi::comm().gatherv( in, in + sendcount, out, recvcounts, displs, root );
+}
+
+void fckit__mpi__gatherv_logical( const Comm* comm, const int32* in, int32* out, size_t sendcount, int32* recvcounts,
+                                     int32* displs, size_t root ) {
+    if ( comm )
+        comm->gatherv( in, in + sendcount, out, recvcounts, displs, root );
+    else
+        eckit::mpi::comm().gatherv( in, in + sendcount, out, recvcounts, displs, root );
+}
+  // ygyu: end
+
 void fckit__mpi__broadcast_int32( const Comm* comm, int32* buffer, size_t count, size_t root ) {
     if ( comm )
         comm->broadcast( buffer, count, root );

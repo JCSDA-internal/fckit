@@ -212,6 +212,12 @@ contains
   @:end_interface()
     !! MPI allgather interface for most array and scalar types
 
+!ygyu
+  @:begin_interface( gatherv )
+  @:generate_interfaces( gatherv )
+  @:end_interface()
+    !! MPI gatherv interface for most array and scalar types
+
   @:begin_interface( send )
   @:generate_interfaces( send )
   @:end_interface()
@@ -431,6 +437,16 @@ interface
     ${btype}$, dimension(*) :: in, out
     integer(c_size_t), value :: sendcount
     integer(c_int32_t), dimension(*) :: recvcounts, displs
+  end subroutine
+
+!ygyu
+  subroutine fckit__mpi__gatherv_${dtype}$(comm,in,out,sendcount,recvcounts,displs,root) bind(c)
+    use, intrinsic :: iso_c_binding
+    type(c_ptr), value :: comm
+    ${btype}$, dimension(*) :: in, out
+    integer(c_size_t), value :: sendcount
+    integer(c_int32_t), dimension(*) :: recvcounts, displs
+    integer(c_size_t), value :: root
   end subroutine
 
   subroutine fckit__mpi__broadcast_${dtype}$(comm,buffer,count,root) bind(c)
@@ -788,6 +804,22 @@ subroutine allgatherv_${dtype}$_r0(this,in,out,dummy)
 end subroutine
 
 !---------------------------------------------------------------------------------------
+!ygyu
+subroutine gatherv_${dtype}$_r0(this,in,out,dummy)
+  use, intrinsic :: iso_c_binding
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  ${ftype}$, intent(in) :: in
+  ${ftype}$, intent(inout) :: out(:)
+  ${ftype}$, intent(in) :: dummy
+  ! This routine should never be called because of dummy
+  FCKIT_SUPPRESS_UNUSED( this )
+  FCKIT_SUPPRESS_UNUSED( in )
+  FCKIT_SUPPRESS_UNUSED( out )
+  FCKIT_SUPPRESS_UNUSED( dummy )
+end subroutine
+
+!---------------------------------------------------------------------------------------
 
 subroutine alltoallv_${dtype}$_r0(this,in,scounts,sdispl,out,rcounts,rdispl,dummy)
   use, intrinsic :: iso_c_binding
@@ -863,6 +895,28 @@ subroutine allgatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displ
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
   call fckit__mpi__allgatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp)
+end subroutine
+
+!---------------------------------------------------------------------------------------
+
+!ygyu
+subroutine gatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displs,root)
+  use, intrinsic :: iso_c_binding
+  use fckit_array_module, only: array_view1d
+  class(fckit_mpi_comm), intent(in) :: this
+  ${ftype}$, intent(in) :: in${dim[rank]}$
+  ${ftype}$, intent(inout) :: out${dim[rank]}$
+  integer(c_int32_t), value :: sendcount
+  integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
+  integer(c_size_t), value :: root
+  ${btype}$, pointer :: view_in(:), view_out(:)
+  ${btype}$ :: mold
+  integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
+  view_in => array_view1d(in,mold)
+  view_out => array_view1d(out,mold)
+  view_rc => array_view1d(recvcounts)
+  view_dp => array_view1d(displs)
+  call fckit__mpi__gatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp,root)
 end subroutine
 
 !---------------------------------------------------------------------------------------
@@ -1174,6 +1228,9 @@ function ireceive_${dtype}$_r${rank}$(this,buffer,count,source,tag) result(reque
   view_buffer  => array_view1d(buffer,mold)
   request = fckit__mpi__ireceive_${dtype}$(this%CPTR_PGIBUG_A,view_buffer, &
     count,source,tag_opt)
+!  request = fckit__mpi__ireceive_${dtype}$(this%CPTR_PGIBUG_A,buffer, &
+!    count,source,tag_opt)
+    
 end function
 
 !---------------------------------------------------------------------------------------
