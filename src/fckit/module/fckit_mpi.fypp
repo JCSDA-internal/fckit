@@ -908,7 +908,7 @@ subroutine gatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displs,r
   ${ftype}$, intent(inout) :: out${dim[rank]}$
   integer(c_int32_t), value :: sendcount
   integer(c_int32_t), intent(in) :: recvcounts(:), displs(:)
-  integer(c_size_t), value :: root
+  integer(c_int32_t), value :: root
   ${btype}$, pointer :: view_in(:), view_out(:)
   ${btype}$ :: mold
   integer(c_int32_t), pointer :: view_rc(:), view_dp(:)
@@ -916,7 +916,7 @@ subroutine gatherv_${dtype}$_r${rank}$(this,in,out,sendcount,recvcounts,displs,r
   view_out => array_view1d(out,mold)
   view_rc => array_view1d(recvcounts)
   view_dp => array_view1d(displs)
-  call fckit__mpi__gatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp,root)
+  call fckit__mpi__gatherv_${dtype}$(this%CPTR_PGIBUG_A,view_in,view_out,int(sendcount,c_size_t),view_rc,view_dp,int(root,c_size_t))
 end subroutine
 
 !---------------------------------------------------------------------------------------
